@@ -6,7 +6,7 @@
 #include "Edge.h"
 
 Graph::Graph(int numberOfVertices, int numberOfEdges, int minWeight, int maxWeight) {
-	validateParameters(numberOfVertices, numberOfEdges);
+	validateParameters(numberOfVertices, numberOfEdges, minWeight, maxWeight);
 	this->numberOfVertices = numberOfVertices;
 	this->numberOfEdges = numberOfEdges;
 	this->minWeight = minWeight;
@@ -16,10 +16,12 @@ Graph::Graph(int numberOfVertices, int numberOfEdges, int minWeight, int maxWeig
 	this->relationMatrix = temp;
 
 	for (int i = 0; i < this->numberOfVertices; ++i) {
-		this->vertices.push_back(Vertex(i));
+		Vertex* vertex = new Vertex(i);
+		this->vertices.push_back(vertex);
 	}
 
 	buildMinNumberOfEdges();
+	buildRemainingEdges();
 }
 
 void Graph::printRelations() {
@@ -29,31 +31,61 @@ void Graph::printRelations() {
 		}
 		printf("\n");
 	}
+	printf("\n");
 }
-void Graph::validateParameters(int numberOfVertices, int numberOfEdges) {
+void Graph::validateParameters(int numberOfVertices, int numberOfEdges, int minWeight, int maxWeight) {
 	if (numberOfVertices < 1)
 		throw std::exception("Number of vertices must be greater than 1.");
 	if (numberOfEdges < numberOfVertices - 1)
 		throw std::exception("Number of edges must be greater.");
 	if (numberOfEdges > numberOfVertices * (numberOfVertices - 1) / 2)
 		throw std::exception("Number of edges must be less.");
+	if (minWeight > maxWeight)
+		throw std::exception("Min weight must be less than Max weight.");
 }
 
 void Graph::buildMinNumberOfEdges() {
-	Vertex initialVertex = this->vertices[rand() % this->numberOfVertices];
-	std::vector<Vertex> connectedVertices = { initialVertex };
-	std::vector<Vertex> unconnectedVertices(this->vertices);
+	Vertex* initialVertex = this->vertices[rand() % this->numberOfVertices];
+	std::vector<Vertex*> connectedVertices = { initialVertex };
+	std::vector<Vertex*> unconnectedVertices(this->vertices);
 	unconnectedVertices.erase(std::remove(unconnectedVertices.begin(), unconnectedVertices.end(), initialVertex), unconnectedVertices.end());
 	std::random_shuffle(unconnectedVertices.begin(), unconnectedVertices.end());
 
 	for (int i = 0; i < this->numberOfVertices - 1; ++i) {
-		Vertex connectedVertex = connectedVertices[rand() % connectedVertices.size()];
-		Vertex unconnectedVertex = unconnectedVertices[unconnectedVertices.size() - 1];
+		Vertex* connectedVertex = connectedVertices[rand() % connectedVertices.size()];
+		Vertex* unconnectedVertex = unconnectedVertices[unconnectedVertices.size() - 1];
 		unconnectedVertices.pop_back();
 		connectedVertices.push_back(unconnectedVertex);
 
-		int weight = this->minWeight + rand() % this->maxWeight;
-		this->relationMatrix.set(connectedVertex.id, unconnectedVertex.id, weight);
-		this->edges.push_back(Edge(&connectedVertex, &unconnectedVertex, weight));
+		int weight = this->minWeight + rand() % (this->maxWeight + 1 - this->minWeight);
+		addEdge(connectedVertex, unconnectedVertex, weight);
+	}
+}
+
+void Graph::addEdge(Vertex* firstVertex, Vertex* secondVertex, int weight) {
+	this->relationMatrix.set(firstVertex->id, secondVertex->id, weight);
+	this->edges.push_back(Edge(firstVertex, secondVertex, weight));
+}
+
+void Graph::buildRemainingEdges() {
+	int numberOfRemainingEdges = this->numberOfEdges - (this->numberOfVertices - 1);
+
+	if (numberOfRemainingEdges > 0) {
+		std::vector<std::pair<int, int>> availableEdgeIndices;
+		for (int i = 0; i < this->numberOfVertices - 1; ++i) {
+			for (int j = i + 1; j < this->numberOfVertices; ++j) {
+				if (this->relationMatrix.get(i, j) == 0) {
+					availableEdgeIndices.push_back(std::pair<int, int>(i, j));
+				}
+			}
+		}
+		std::random_shuffle(availableEdgeIndices.begin(), availableEdgeIndices.end());
+
+		for (int i = 0; i < numberOfRemainingEdges; ++i) {
+			Vertex* firstVertex = this->vertices[availableEdgeIndices[i].first];
+			Vertex* secondVertex = this->vertices[availableEdgeIndices[i].second];
+			int weight = this->minWeight + rand() % (this->maxWeight + 1 - this->minWeight);
+			addEdge(firstVertex, secondVertex, weight);
+		}
 	}
 }

@@ -14,7 +14,7 @@ class Graph {
 public:
 	int numberOfVertices;
 	int numberOfEdges;
-	std::vector<Vertex> vertices;
+	std::vector<Vertex*> vertices;
 	std::vector<Edge> edges;
 
 	int minWeight;
@@ -27,7 +27,11 @@ public:
 	void printRelations();
 
 private:
-	void validateParameters(int numberOfVertices, int numberOfEdges);
+	void validateParameters(int numberOfVertices, int numberOfEdges, int minWeight, int maxWeight);
+
+	void addEdge(Vertex* firstVertex, Vertex* secondVertex, int weight);
 
 	void buildMinNumberOfEdges();
+
+	void buildRemainingEdges();
 };

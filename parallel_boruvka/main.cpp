@@ -9,8 +9,8 @@ int main()
 	srand(time(0));
 
 	int numberOfVertices = 10;
-	int numberOfEdges = 9;
-	int minWeight = 1;
+	int numberOfEdges = 45;
+	int minWeight = 10;
 	int maxWeight = 20;
 
 	try {
