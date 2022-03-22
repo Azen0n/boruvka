@@ -3,19 +3,25 @@
 #include <algorithm>
 
 #include "headers/Graph.h"
+#include "headers/Boruvka.h"
 
 int main()
 {
-	srand(time(0));
+	srand((unsigned int)time(0));
 
-	int numberOfVertices = 10;
-	int numberOfEdges = 45;
+	int numberOfVertices = 5;
+	int numberOfEdges = 7;
 	int minWeight = 10;
-	int maxWeight = 20;
+	int maxWeight = 50;
 
 	try {
 		Graph graph(numberOfVertices, numberOfEdges, minWeight, maxWeight);
-		graph.printRelations();
+		Boruvka boruvka(graph);
+		boruvka.run();
+
+		printf("Number of vertices: %i, number of edges: %i\n", numberOfVertices, numberOfEdges);
+		graph.relationMatrix.print();
+		boruvka.printMST();
 	}
 	catch (std::exception& e) {
 		printf("%s\n", e.what());

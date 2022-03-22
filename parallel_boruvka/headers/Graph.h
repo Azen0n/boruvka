@@ -24,7 +24,9 @@ public:
 
 	Graph(int numberOfVertices, int numberOfEdges, int minWeight, int maxWeight);
 
-	void printRelations();
+	Graph(int numberOfVertices, std::vector<Edge> edges);
+
+	Graph();
 
 private:
 	void validateParameters(int numberOfVertices, int numberOfEdges, int minWeight, int maxWeight);

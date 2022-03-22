@@ -14,6 +14,8 @@ public:
 
 	void set(int x, int y, int value);
 
+	void print();
+
 private:
 	std::vector<int> matrix;
 };

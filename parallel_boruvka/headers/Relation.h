@@ -10,4 +10,6 @@ public:
 	int weight;
 
 	Relation(Vertex* vertex, int weight);
+
+	bool operator==(const Relation& relation);
 };

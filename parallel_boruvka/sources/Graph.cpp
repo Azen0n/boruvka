@@ -24,15 +24,33 @@ Graph::Graph(int numberOfVertices, int numberOfEdges, int minWeight, int maxWeig
 	buildRemainingEdges();
 }
 
-void Graph::printRelations() {
-	for (int i = 0; i < this->numberOfVertices; ++i) {
-		for (int j = 0; j < this->numberOfVertices; ++j) {
-			printf("%-2i ", this->relationMatrix.get(i, j));
+Graph::Graph(int numberOfVertices, std::vector<Edge> edges) {
+	this->numberOfVertices = numberOfVertices;
+	this->numberOfEdges = (int)edges.size();
+
+	RelationMatrix temp(numberOfVertices);
+	this->relationMatrix = temp;
+
+	for (Edge edge : edges) {
+		addEdge(edge.firstVertex, edge.secondVertex, edge.weight);
+
+		if (std::find_if(edge.firstVertex->relations.begin(), edge.firstVertex->relations.end(), [&edge](Relation const& relation) {
+			return relation.vertex->id == edge.secondVertex->id;
+			}) == edge.firstVertex->relations.end()) {
+			edge.firstVertex->relations.push_back(Relation(edge.secondVertex, edge.weight));
 		}
-		printf("\n");
+
+		if (std::find(this->vertices.begin(), this->vertices.end(), edge.firstVertex) == this->vertices.end()) {
+			this->vertices.push_back(edge.firstVertex);
+		}
+		if (std::find(this->vertices.begin(), this->vertices.end(), edge.secondVertex) == this->vertices.end()) {
+			this->vertices.push_back(edge.secondVertex);
+		}
 	}
-	printf("\n");
 }
+
+Graph::Graph() { }
+
 void Graph::validateParameters(int numberOfVertices, int numberOfEdges, int minWeight, int maxWeight) {
 	if (numberOfVertices < 1)
 		throw std::exception("Number of vertices must be greater than 1.");

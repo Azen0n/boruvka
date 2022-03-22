@@ -13,4 +13,6 @@ public:
 	Vertex(int id);
 
 	bool operator==(const Vertex& vertex);
+
+	bool operator<(const Vertex& vertex);
 };

@@ -23,3 +23,13 @@ void RelationMatrix::set(int x, int y, int value) {
 	this->matrix[x * this->width + y] = value;
 	this->matrix[y * this->width + x] = value;
 }
+
+void RelationMatrix::print() {
+	for (int i = 0; i < this->width; ++i) {
+		for (int j = 0; j < this->width; ++j) {
+			printf("%-2i ", get(i, j));
+		}
+		printf("\n");
+	}
+	printf("\n");
+}
